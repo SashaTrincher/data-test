@@ -60,6 +60,45 @@ addSpentBtn.addEventListener("click", () => {
     }
 });
 
+// ...
+
+// Function to load total primogems from local storage
+function loadTotal() {
+    const savedTotal = localStorage.getItem("totalPrimogems");
+    if (savedTotal !== null) {
+        totalPrimogems = parseInt(savedTotal);
+        updateTotal();
+    }
+}
+
+// Function to save total primogems to local storage
+function saveTotal() {
+    localStorage.setItem("totalPrimogems", totalPrimogems.toString());
+}
+
+// Add an event listener to update total when the page is loaded
+window.addEventListener("load", loadTotal);
+
+// Add an event listener to save total when it's updated
+window.addEventListener("beforeunload", saveTotal);
+
+// ...
+
+// Inside addTransaction function:
+function addTransaction(amount, type) {
+    // ...
+    
+    // Update total and history display
+    if (type === "collected") {
+        totalPrimogems += amount;
+    } else {
+        totalPrimogems -= amount;
+    }
+    updateTotal();
+    displayTransactions();
+    saveTotal(); // Save the total in local storage
+}
+
 // Initial display
 updateTotal();
 displayTransactions();
