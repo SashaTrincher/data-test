@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genshin Impact Primogems Tracker</title>
+</head>
+<body>
+    <h1>Primogems Tracker</h1>
+
+    <!-- Input for primogems collected -->
+    <label for="collected">Primogems Collected:</label>
+    <input type="number" id="collected" placeholder="Enter collected primogems">
+    <button id="addCollected">Add</button>
+
+    <!-- Input for primogems spent -->
+    <label for="spent">Primogems Spent:</label>
+    <input type="number" id="spent" placeholder="Enter spent primogems">
+    <button id="addSpent">Add</button>
+
+    <!-- Display total primogems -->
+    <div>
+        <h2>Total Primogems: <span id="total">0</span></h2>
+    </div>
+
+    <!-- Display history of transactions -->
+    <div>
+        <h2>Transaction History:</h2>
+        <ul id="history"></ul>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
