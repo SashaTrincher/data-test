@@ -6,28 +6,18 @@
     <title>Genshin Impact Primogems Tracker</title>
 </head>
 <body>
-    <h1>Primogems Tracker</h1>
-
-    <!-- Input for primogems collected -->
-    <label for="collected">Primogems Collected:</label>
-    <input type="number" id="collected" placeholder="Enter collected primogems">
-    <button id="addCollected">Add</button>
-
-    <!-- Input for primogems spent -->
-    <label for="spent">Primogems Spent:</label>
-    <input type="number" id="spent" placeholder="Enter spent primogems">
-    <button id="addSpent">Add</button>
-
-    <!-- Display total primogems -->
-    <div>
-        <h2>Total Primogems: <span id="total">0</span></h2>
-    </div>
-
-    <!-- Display history of transactions -->
-    <div>
-        <h2>Transaction History:</h2>
-        <ul id="history"></ul>
-    </div>
+    <main class="main">
+        <h1>Genshin Impact Primogems Tracker</h1>
+        <div class="primogems-container">
+            <label for="transaction-amount">Enter Primogems:</label>
+            <input id="transaction-amount" type="number" placeholder="Amount" min="1">
+            <button id="add-collected">Add Collected</button>
+            <button id="add-spent">Add Spent</button>
+            <button id="wipe-data">Wipe All Data</button>
+        </div>
+        <h2>Total Primogems: <span id="total-primogems">0</span></h2>
+        <ul id="transaction-list"></ul>
+    </main>
 
     <script src="./script.js"></script>
 </body>

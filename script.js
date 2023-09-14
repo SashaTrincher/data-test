@@ -1,104 +1,123 @@
+// Initialize totalPrimogems from local storage or default to 0
+let totalPrimogems = parseInt(localStorage.getItem("totalPrimogems")) || 0;
+
+// Initialize transactions from local storage or default to an empty array
+let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
 // Get references to HTML elements
-const collectedInput = document.getElementById("collected");
-const spentInput = document.getElementById("spent");
-const addCollectedBtn = document.getElementById("addCollected");
-const addSpentBtn = document.getElementById("addSpent");
-const totalDisplay = document.getElementById("total");
-const historyList = document.getElementById("history");
-
-// Initialize total primogems
-let totalPrimogems = 0;
-
-// Load transaction history from local storage
-const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+const totalPrimogemsDisplay = document.getElementById("total-primogems");
+const transactionList = document.getElementById("transaction-list");
+const transactionAmountInput = document.getElementById("transaction-amount");
+const addCollectedButton = document.getElementById("add-collected");
+const addSpentButton = document.getElementById("add-spent");
+const wipeDataButton = document.getElementById("wipe-data");
 
 // Function to update the total primogems display
 function updateTotal() {
-    totalDisplay.textContent = totalPrimogems;
+    totalPrimogemsDisplay.textContent = totalPrimogems;
 }
 
-// Function to add a transaction
-function addTransaction(amount, type) {
-    const transaction = { amount, type, timestamp: new Date().toLocaleString() };
-    transactions.unshift(transaction); // Add to the beginning of the array
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-
-    // Update total and history display
-    if (type === "collected") {
-        totalPrimogems += amount;
-    } else {
-        totalPrimogems -= amount;
-    }
-    updateTotal();
-    displayTransactions();
-}
-
-// Function to display transaction history
+// Function to display transactions in the history
 function displayTransactions() {
-    historyList.innerHTML = "";
-    transactions.forEach(transaction => {
+    transactionList.innerHTML = "";
+    transactions.forEach((transaction, index) => {
         const listItem = document.createElement("li");
-        listItem.textContent = `${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}: ${transaction.amount} (${transaction.timestamp})`;
-        historyList.appendChild(listItem);
+        listItem.textContent = `${transaction.type === "collected" ? "Collected" : "Spent"} ${transaction.amount} primogems`;
+        listItem.addEventListener("click", () => removeTransaction(index));
+        transactionList.appendChild(listItem);
     });
 }
 
-// Event listeners for adding transactions
-addCollectedBtn.addEventListener("click", () => {
-    const amount = parseInt(collectedInput.value);
-    if (!isNaN(amount) && amount > 0) {
-        addTransaction(amount, "collected");
-        collectedInput.value = ""; // Clear the input field
-    }
-});
-
-addSpentBtn.addEventListener("click", () => {
-    const amount = parseInt(spentInput.value);
-    if (!isNaN(amount) && amount > 0) {
-        addTransaction(amount, "spent");
-        spentInput.value = ""; // Clear the input field
-    }
-});
-
-// ...
-
-// Function to load total primogems from local storage
-function loadTotal() {
-    const savedTotal = localStorage.getItem("totalPrimogems");
-    if (savedTotal !== null) {
-        totalPrimogems = parseInt(savedTotal);
-        updateTotal();
-    }
-}
-
-// Function to save total primogems to local storage
+// Function to save totalPrimogems to local storage
 function saveTotal() {
-    localStorage.setItem("totalPrimogems", totalPrimogems.toString());
+    localStorage.setItem("totalPrimogems", totalPrimogems);
 }
 
-// Add an event listener to update total when the page is loaded
-window.addEventListener("load", loadTotal);
+// Function to save transactions to local storage
+function saveTransactions() {
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+}
 
-// Add an event listener to save total when it's updated
-window.addEventListener("beforeunload", saveTotal);
-
-// ...
-
-// Inside addTransaction function:
-function addTransaction(amount, type) {
-    // ...
-    
-    // Update total and history display
-    if (type === "collected") {
-        totalPrimogems += amount;
-    } else {
-        totalPrimogems -= amount;
+// Function to add a transaction
+function addTransaction(type, amount) {
+    if (amount <= 0) {
+        alert("Please enter a valid positive amount.");
+        return;
     }
+
+    let error = false;
+
+    if (type === "spent" && amount > totalPrimogems) {
+        alert("You can't remove more primogems than you have in total.");
+        error = true;
+    }
+
+    if (!error) {
+        transactions.push({ type, amount });
+        saveTransactions();
+
+        if (type === "collected") {
+            totalPrimogems += amount;
+        } else {
+            totalPrimogems -= amount;
+        }
+
+        saveTotal();
+        updateTotal();
+        displayTransactions();
+    }
+}
+
+// Function to remove a transaction
+function removeTransaction(index) {
+    if (index < 0 || index >= transactions.length) {
+        return; // Invalid index
+    }
+
+    const transaction = transactions[index];
+
+    if (transaction.type === "spent" && transaction.amount > totalPrimogems) {
+        alert("You can't remove more primogems than you have in total.");
+        return;
+    }
+
+    if (transaction.type === "collected") {
+        totalPrimogems -= transaction.amount;
+    } else {
+        totalPrimogems += transaction.amount;
+    }
+
+    transactions.splice(index, 1);
+    saveTransactions();
+    saveTotal();
     updateTotal();
     displayTransactions();
-    saveTotal(); // Save the total in local storage
 }
 
-// Initial display
+// Event listener for the "Add Collected" button
+addCollectedButton.addEventListener("click", () => {
+    const amount = parseInt(transactionAmountInput.value);
+    addTransaction("collected", amount);
+    transactionAmountInput.value = "";
+});
+
+// Event listener for the "Add Spent" button
+addSpentButton.addEventListener("click", () => {
+    const amount = parseInt(transactionAmountInput.value);
+    addTransaction("spent", amount);
+    transactionAmountInput.value = "";
+});
+
+// Event listener for the "Wipe All Data" button
+wipeDataButton.addEventListener("click", () => {
+    localStorage.removeItem("totalPrimogems");
+    localStorage.removeItem("transactions");
+    totalPrimogems = 0;
+    transactions = [];
+    updateTotal();
+    displayTransactions();
+});
+
+// Initial setup
 updateTotal();
 displayTransactions();
